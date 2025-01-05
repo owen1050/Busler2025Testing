@@ -6,10 +6,16 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import java.io.File;
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.math.util.Units;
 
-
+import java.io.File;
+import edu.wpi.first.wpilibj.Filesystem;
+import swervelib.parser.SwerveParser;
+import swervelib.SwerveDrive;
+import edu.wpi.first.math.util.Units;
 
 
 
@@ -23,7 +29,20 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-  public Robot() {}
+
+   
+  double maximumSpeed = Units.feetToMeters(16);
+  File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
+  SwerveDrive  swerveDrive;
+  
+  public Robot() {
+    try {
+      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
   @Override
   public void robotPeriodic() {}
