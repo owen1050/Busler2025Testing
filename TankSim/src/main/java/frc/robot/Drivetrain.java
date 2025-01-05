@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -28,9 +31,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
   // 3 meters per second.
-  public static final double kMaxSpeed = 3.0;
+  public static final double kMaxSpeed = 0.06;
   // 1/2 rotation per second.
-  public static final double kMaxAngularSpeed = Math.PI;
+  public static final double kMaxAngularSpeed = Math.PI / 30;
 
   private static final double kTrackWidth = 0.381 * 2;
   private static final double kWheelRadius = 0.0508;
@@ -155,10 +158,15 @@ public class Drivetrain {
   /** Update odometry - this should be run every robot loop. */
   public void periodic() {
     updateOdometry();
-    m_fieldSim.setRobotPose(m_odometry.getPoseMeters());
+    
   }
 
   public void forceUpdateSimPose(double dx, double dy, double dt){
-    
+    double ox = m_odometry.getPoseMeters().getX();
+    double oy = m_odometry.getPoseMeters().getY();
+    Rotation2d or = m_odometry.getPoseMeters().getRotation();
+
+    m_odometry.resetPose(new Pose2d(ox + dx, oy + dy, or.plus(new Rotation2d(dt))));
+    m_fieldSim.setRobotPose(m_odometry.getPoseMeters());
   }
 }
